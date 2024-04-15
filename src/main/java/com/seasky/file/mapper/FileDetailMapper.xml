@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.seasky.file.mapper.FileDetailMapper">
-
-    <select id="selectByUserMetaMd5" resultType="org.dromara.x.file.storage.core.FileInfo">
-        SELECT * FROM file_detail where user_metadata->>'$.md5' = #{md5};
-    </select>
-</mapper>

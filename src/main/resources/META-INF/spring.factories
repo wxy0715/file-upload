@@ -1,0 +1,3 @@
+# 加载外部配置文件
+org.springframework.boot.env.EnvironmentPostProcessor=\
+    com.wxy.file.config.WebEnvironmentPostProcessor

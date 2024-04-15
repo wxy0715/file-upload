@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wxy.file.mapper.FileDetailMapper">
+    <select id="selectByUserMetaMd5" resultType="org.dromara.x.file.storage.core.FileInfo">
+        SELECT * FROM file_detail where user_metadata->>'$.md5' = #{md5};
+    </select>
+
+    <update id="removeObjectId">
+        UPDATE file_detail SET object_id = null WHERE object_id = #{objectId}
+    </update>
+
+    <update id="addObjectIdByIdList">
+        UPDATE file_detail SET object_id = #{objectId} WHERE id IN
+        <foreach collection="idList" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </update>
+</mapper>
