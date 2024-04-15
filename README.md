@@ -29,13 +29,13 @@
 
 http://apipost.seaskysh.com/docs/preview/f1fe1216cf4c5961/037d532d87e52590?target_id=ccea78af-7de9-4a57-9583-4ee89c7fc33b
 
-## 服务启动访问地址
-
-![image-20240415150138554](https://wxy-md.oss-cn-shanghai.aliyuncs.com/image-20240415150138554.png)
-
 ## 配置
 
 ![image-20240415150226003](https://wxy-md.oss-cn-shanghai.aliyuncs.com/image-20240415150226003.png)
+
+## 服务启动访问地址
+
+![image-20240415150138554](https://wxy-md.oss-cn-shanghai.aliyuncs.com/image-20240415150138554.png)
 
 ## 前端分片代码示例
 
