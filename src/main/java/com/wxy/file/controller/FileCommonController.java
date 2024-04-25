@@ -85,13 +85,13 @@ public class FileCommonController {
 
     @PostMapping("/checkPart")
     @ApiOperation("判断分片是否上传完成")
-    public DataResult<Boolean> checkPart(@RequestBody FilePartCheckEntity filePartCheckEntity){
+    public DataResult<Integer> checkPart(@RequestBody FilePartCheckEntity filePartCheckEntity){
         return DataResult.success(fileStorageUtil.checkPart(filePartCheckEntity.getUrl(),filePartCheckEntity.getIndex()));
     }
 
     @PostMapping("/uploadPart")
     @ApiOperation("分片上传")
-    public DataResult<Boolean> uploadPart(FilePartUploadEntity filePartUploadEntity){
+    public DataResult<Integer> uploadPart(FilePartUploadEntity filePartUploadEntity){
         return DataResult.success(fileStorageUtil.uploadPart(filePartUploadEntity));
     }
 

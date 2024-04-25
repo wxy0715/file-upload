@@ -93,6 +93,7 @@ public class FileStorageUtil {
         response.setCharacterEncoding("UTF-8");
         String fileName = URLEncoder.encode(fileInfo.getOriginalFilename(), "UTF-8").replaceAll("\\+", "%20");
         response.addHeader("content-disposition","attachment;filename="+fileName);
+        response.addHeader("Content-Type", fileInfo.getContentType());
         fileStorageService.download(url)
                 .setProgressListener(new ProgressListener() {
                     @Override
@@ -177,26 +178,22 @@ public class FileStorageUtil {
     /**
      * 上传分片
      */
-    public boolean uploadPart(FilePartUploadEntity filePartUploadEntity) {
+    public Integer uploadPart(FilePartUploadEntity filePartUploadEntity) {
         ExceptionUtil.isNull(filePartUploadEntity.getUrl(),"url不能为空");
         ExceptionUtil.isNull(filePartUploadEntity.getIndex(),"索引不能为空");
         MultipartFile file = filePartUploadEntity.getFile();
-        // 获取MultipartFile的字节
-//        byte[] bytes = null;
-//        try (InputStream in = file.getInputStream()){
-//            bytes = IoUtil.readBytes(in);
-//        } catch (IOException e) {
-//            log.error("获取文件流失败", e);
-//            ExceptionUtil.error("获取文件流失败");
-//        }
-//        ExceptionUtil.isTrue(bytes == null || bytes.length == 0,"请传入文件流");
         // 验证分片是否上传完成
-        boolean flag = checkPart(filePartUploadEntity.getUrl(), filePartUploadEntity.getIndex());
-        if (flag) {
+        Integer index = checkPart(filePartUploadEntity.getUrl(), filePartUploadEntity.getIndex());
+        if (index != -1) {
             log.info("分片已存在");
-            return true;
+            return filePartUploadEntity.getIndex();
         }
         FileInfo fileInfo = fileStorageService.getFileInfoByUrl(filePartUploadEntity.getUrl());
+        if (BudgetObjectUtil.isEmpty(fileInfo.getContentType())) {
+            String contentType = file.getContentType();
+            fileInfo.setContentType(contentType);
+            fileStorageService.getFileRecorder().update(fileInfo);
+        }
         FilePartInfo filePartInfo = null;
         try {
             filePartInfo = fileStorageService
@@ -209,25 +206,30 @@ public class FileStorageUtil {
             ExceptionUtil.error("上传失败");
         }
         log.info("分片上传成功：{}", filePartInfo);
-        return true;
+        return filePartUploadEntity.getIndex();
     }
+
 
     /**
      * 校验文件分片是否上传完成
      */
-    public boolean checkPart(String url, Integer index) {
+    public Integer checkPart(String url, Integer index) {
         // 查询主表信息
         FileInfo fileInfo = fileStorageService.getFileInfoByUrl(url);
         ExceptionUtil.isNull(fileInfo,"该任务不存在,请重新上传!");
         // 判断是否主文件已经上传完成
         if (fileInfo.getUploadStatus() == 2) {
-            return true;
+            return index;
         }
         // 获取上传完成的分片信息
         FilePartInfoList partList = fileStorageService.listParts(fileInfo).listParts();
         FilePartInfo first = StreamUtils.findFirst(partList.getList(), info -> info.getPartNumber().equals(index));
-        return first != null;
+        if (first != null) {
+            return index;
+        }
+        return -1;
     }
+
 
     /**
      * 合并分片
